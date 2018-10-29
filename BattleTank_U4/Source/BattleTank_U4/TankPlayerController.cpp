@@ -25,3 +25,30 @@ void ATankPlayerController::BeginPlay()
 
 	UE_LOG(LogTemp, Warning, TEXT("PlayerController Begin Play"));
 }
+
+void ATankPlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	AimTowardsCrosshair();
+}
+
+void ATankPlayerController::AimTowardsCrosshair()
+{
+	if (!GetControlledTank())
+		return;
+	FVector outHitLocation;
+	if (GetSightRayHitLocation(outHitLocation))
+	{
+
+		UE_LOG(LogTemp, Warning, TEXT("HitLocation: %s"), *outHitLocation.ToString());
+	}
+
+}
+
+bool ATankPlayerController::GetSightRayHitLocation(FVector & outHitLocation) const
+{
+	outHitLocation = FVector(1.0);
+	return true;
+}
+
+
