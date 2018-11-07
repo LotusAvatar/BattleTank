@@ -2,10 +2,13 @@
 
 #pragma once
 
+#include "CustomHeaders.h"
 #include "CoreMinimal.h"
-#include "TankAimingComponent.h"
 #include "GameFramework/Pawn.h"
 #include "Tank.generated.h"
+
+class UTankBarrel; // Forward Declaration
+class UTankAimingComponent; // Forward Declaration
 
 UCLASS()
 class BATTLETANK_U4_API ATank : public APawn
@@ -16,7 +19,7 @@ public:
 	void AimAt(FVector hitLocation);
 
 	UFUNCTION(BlueprintCallable, Category = Setup)
-	void SetBarrelReference(UStaticMeshComponent* barrelToSet);
+	void SetBarrelReference(UTankBarrel* barrelToSet);
 
 protected:
 

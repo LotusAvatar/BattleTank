@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Tank.h"
+#include "CustomHeaders.h"
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "TankPlayerController.generated.h" // Must be the last include
@@ -10,6 +10,8 @@
 /**
  * 
  */
+class ATank; // Forward Declaration
+
 UCLASS()
 class BATTLETANK_U4_API ATankPlayerController : public APlayerController
 {
