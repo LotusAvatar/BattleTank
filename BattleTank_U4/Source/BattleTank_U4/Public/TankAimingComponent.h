@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "CustomHeaders.h"
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "TankAimingComponent.generated.h"
 
-class UTankBarrel; // Forward Declaration
+// Forward Declaration
+class UTankBarrel; 
+class UTankTurret; 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLETANK_U4_API UTankAimingComponent : public UActorComponent
@@ -20,11 +21,15 @@ public:
 
 	void SetBarrelReference(UTankBarrel * barrelToSet);
 
+	void SetTurretReference(UTankTurret * turretToSet);
+
 	void AimAt(FVector hitLocation, float lauchSpeed);
 		
 private:
+
 	UTankBarrel* Barrel = nullptr;
 
-	void MoveBarrelTowards(FVector aimDirection);
-	
+	UTankTurret* Turret = nullptr;
+
+	void MoveTowards(FVector aimDirection);
 };

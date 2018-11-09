@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CustomHeaders.h"
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "TankPlayerController.generated.h" // Must be the last include
@@ -18,11 +17,13 @@ class BATTLETANK_U4_API ATankPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 private:
-	ATank* GetControlledTank() const;
 	
 	virtual void BeginPlay() override;
+
 	virtual void Tick(float DeltaTime) override;
 
+	ATank* GetControlledTank() const;
+	
 	UPROPERTY(EditAnywhere)
 		float crossHairXLocation;
 	UPROPERTY(EditAnywhere)
