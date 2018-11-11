@@ -3,6 +3,7 @@
 #include "Tank.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
+#include "Projectile.h"
 #include "TankAimingComponent.h"
 #include "CustomHeaders.h"
 
@@ -19,13 +20,20 @@ ATank::ATank()
 
 void ATank::SetReferences(UTankBarrel * barrelToSet, UTankTurret * turretToSet)
 {
+	Barrel = barrelToSet;
 	TankAimingComponent->SetBarrelReference(barrelToSet);
 	TankAimingComponent->SetTurretReference(turretToSet);
 }
 
 void ATank::Fire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Firing!"))
+	if (!Barrel)
+		return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Firing!"));
+	FVector spawnLocation = Barrel->GetSocketLocation(FName("ProjectileStartSocket"));
+	FRotator spawnRotation = Barrel->GetSocketRotation(FName("ProjectileStartSocket"));
+	GetWorld()->SpawnActor<AProjectile>(projectile_BP, spawnLocation, spawnRotation);
 }
 
 void ATank::AimAt(FVector hitLocation)
