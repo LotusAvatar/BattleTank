@@ -38,20 +38,13 @@ void UTankAimingComponent::AimAt(FVector hitLocation, float lauchSpeed)
 	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity(this, outLaunchVelocity, startLocation, hitLocation, lauchSpeed, false, 0, 0, ESuggestProjVelocityTraceOption::DoNotTrace);
 	if (bHaveAimSolution)
 	{
-		/*FString DebugMsg1 = FString::Printf(TEXT("outLaunchVelocity: %s"), *outLaunchVelocity.ToString());
-		GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Green, DebugMsg1);
-
-		FString DebugMsg2 = FString::Printf(TEXT("startLocation: %s"), *startLocation.ToString());
-		GEngine->AddOnScreenDebugMessage(2, 0.0f, FColor::Green, DebugMsg2);
-
-		FString DebugMsg3 = FString::Printf(TEXT("hitLocation: %s"), *hitLocation.ToString());
-		GEngine->AddOnScreenDebugMessage(3, 0.0f, FColor::Green, DebugMsg3);
-
-		FString DebugMsg4 = FString::Printf(TEXT("lauchSpeed: %f"), lauchSpeed);
-		GEngine->AddOnScreenDebugMessage(4, 0.0f, FColor::Green, DebugMsg4);*/
-
 		FVector aimDirection = outLaunchVelocity.GetSafeNormal();
 		MoveTowards(aimDirection);
+	}
+	else
+	{
+		FString DebugMsg1 = FString::Printf(TEXT("No Solution Found!"));
+		GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Green, DebugMsg1);
 	}
 }
 
@@ -61,8 +54,8 @@ void UTankAimingComponent::MoveTowards(FVector aimDirection)
 	FRotator aimAsRotator = aimDirection.Rotation();
 	FRotator deltaRotator = aimAsRotator- barrelRotator;
 
-	FString DebugMsg = FString::Printf(TEXT("deltaRotator: %s"), *deltaRotator.ToString());
-	GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Green, DebugMsg);
+	/*FString DebugMsg = FString::Printf(TEXT("deltaRotator: %s"), *deltaRotator.ToString());
+	GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Green, DebugMsg);*/
 
 	Turret->Rotate(deltaRotator.Yaw);
 	Barrel->Elevate(deltaRotator.Pitch);

@@ -22,6 +22,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Setup)
 	void SetReferences(UTankBarrel * barrelToSet, UTankTurret * turretToSet);
 
+	UFUNCTION(BlueprintCallable)
+	void Fire();
+
 protected:
 
 	UTankAimingComponent* TankAimingComponent = nullptr;
