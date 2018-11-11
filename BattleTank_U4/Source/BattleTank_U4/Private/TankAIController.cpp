@@ -4,46 +4,21 @@
 #include "Tank.h"
 #include "CustomHeaders.h"
 
-ATank* ATankAIController::GetControlledTank() const
-{
-	return Cast<ATank>(GetPawn());
-
-}
-
-void ATankAIController::BeginPlay()
-{
-	Super::BeginPlay();
-
-	auto PlayerTank = GetPlayerTank();
-	if (!PlayerTank)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player not possessing a tank"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player possessing: %s"), *(PlayerTank->GetName()));
-	}
-
-	
-}
-
 void ATankAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GetPlayerTank())
+	/*FString DebugMsg = FString::Printf(TEXT("ATankAIController::Tick"));
+	GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Green, DebugMsg);*/
+
+	ATank * PlayerTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ATank * controlledTank = Cast<ATank>(GetPawn());
+	if (PlayerTank)
 	{
-		playerLocation = GetPlayerTank()->GetActorLocation();
-		GetControlledTank()->AimAt(playerLocation);
+		playerLocation = PlayerTank->GetActorLocation();
+		controlledTank->AimAt(playerLocation);
+		controlledTank->Fire();
 	}
 }
-
-ATank* ATankAIController::GetPlayerTank() const
-{
-	auto PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-	return Cast<ATank>(PlayerPawn);
-
-}
-
 
 

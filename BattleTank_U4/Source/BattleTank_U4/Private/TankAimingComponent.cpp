@@ -54,8 +54,7 @@ void UTankAimingComponent::MoveTowards(FVector aimDirection)
 	FRotator aimAsRotator = aimDirection.Rotation();
 	FRotator deltaRotator = aimAsRotator- barrelRotator;
 
-	/*FString DebugMsg = FString::Printf(TEXT("deltaRotator: %s"), *deltaRotator.ToString());
-	GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Green, DebugMsg);*/
+	
 
 	Turret->Rotate(deltaRotator.Yaw);
 	Barrel->Elevate(deltaRotator.Pitch);

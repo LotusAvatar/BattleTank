@@ -24,11 +24,11 @@ private:
 
 	ATank* GetControlledTank() const;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 		float crossHairXLocation;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 		float crossHairYLocation;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 		float lineTraceRange = 1000000.0f;
 
 	void Initialize();

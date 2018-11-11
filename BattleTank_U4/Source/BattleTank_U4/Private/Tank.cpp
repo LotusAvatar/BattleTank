@@ -21,19 +21,23 @@ ATank::ATank()
 void ATank::SetReferences(UTankBarrel * barrelToSet, UTankTurret * turretToSet)
 {
 	Barrel = barrelToSet;
+	Barrel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	TankAimingComponent->SetBarrelReference(barrelToSet);
 	TankAimingComponent->SetTurretReference(turretToSet);
 }
 
 void ATank::Fire()
 {
-	if (!Barrel)
-		return;
-
-	UE_LOG(LogTemp, Warning, TEXT("Firing!"));
-	FVector spawnLocation = Barrel->GetSocketLocation(FName("ProjectileStartSocket"));
-	FRotator spawnRotation = Barrel->GetSocketRotation(FName("ProjectileStartSocket"));
-	GetWorld()->SpawnActor<AProjectile>(projectile_BP, spawnLocation, spawnRotation);
+	bool isReloaded = (FPlatformTime::Seconds() - lastFireTime > reloadedTimeInSeconds);
+	if (Barrel && isReloaded)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Firing!"));
+		FVector spawnLocation = Barrel->GetSocketLocation(FName("ProjectileStartSocket"));
+		FRotator spawnRotation = Barrel->GetSocketRotation(FName("ProjectileStartSocket"));
+		AProjectile * projectile = GetWorld()->SpawnActor<AProjectile>(projectile_BP, spawnLocation, spawnRotation);
+		projectile->LaunchProjectile(launchSpeed);
+		lastFireTime = FPlatformTime::Seconds();
+	}
 }
 
 void ATank::AimAt(FVector hitLocation)
