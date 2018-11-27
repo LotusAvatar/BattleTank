@@ -11,10 +11,12 @@ void ATankAIController::Tick(float DeltaTime)
 	/*FString DebugMsg = FString::Printf(TEXT("ATankAIController::Tick"));
 	GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Green, DebugMsg);*/
 
+
 	ATank * PlayerTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	ATank * controlledTank = Cast<ATank>(GetPawn());
 	if (PlayerTank)
 	{
+		MoveToActor(PlayerTank, acceptanceRadius);
 		playerLocation = PlayerTank->GetActorLocation();
 		controlledTank->AimAt(playerLocation);
 		controlledTank->Fire();

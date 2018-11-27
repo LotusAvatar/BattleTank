@@ -22,4 +22,5 @@ public:
 
 private:
 	FVector playerLocation;
+	float acceptanceRadius = 3000.0f;
 };
