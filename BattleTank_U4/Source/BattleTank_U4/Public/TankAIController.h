@@ -10,7 +10,7 @@
  * 
  */
 
-class ATank; // Forward Declaration
+class UTankAimingComponent;
 
 UCLASS()
 class BATTLETANK_U4_API ATankAIController : public AAIController
@@ -19,8 +19,12 @@ class BATTLETANK_U4_API ATankAIController : public AAIController
 	
 public:
 	virtual void Tick(float DeltaTime) override;
+	
+	virtual void BeginPlay() override;
 
 private:
 	FVector playerLocation;
 	float acceptanceRadius = 3000.0f;
+
+	void Initialize();
 };

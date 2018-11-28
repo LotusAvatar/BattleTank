@@ -3,6 +3,7 @@
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
+#include "Projectile.h"
 #include "CustomHeaders.h"
 
 
@@ -22,7 +23,7 @@ void UTankAimingComponent::Initialise(UTankBarrel * barrelToSet, UTankTurret * t
 	Turret = turretToSet;
 }
 
-void UTankAimingComponent::AimAt(FVector hitLocation, float lauchSpeed)
+void UTankAimingComponent::AimAt(FVector hitLocation)
 {
 	if (!ensure(Barrel || Turret))
 		return;
@@ -31,7 +32,7 @@ void UTankAimingComponent::AimAt(FVector hitLocation, float lauchSpeed)
 	FVector startLocation = Barrel->GetSocketLocation(FName("ProjectileStartSocket"));
 	//UE_LOG(LogTemp, Warning, TEXT("Hit Location: %s Start Location: %s "), *hitLocation.ToString(), *startLocation.ToString());
 
-	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity(this, outLaunchVelocity, startLocation, hitLocation, lauchSpeed, false, 0, 0, ESuggestProjVelocityTraceOption::DoNotTrace);
+	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity(this, outLaunchVelocity, startLocation, hitLocation, launchSpeed, false, 0, 0, ESuggestProjVelocityTraceOption::DoNotTrace);
 	if (bHaveAimSolution)
 	{
 		FVector aimDirection = outLaunchVelocity.GetSafeNormal();
@@ -42,6 +43,24 @@ void UTankAimingComponent::AimAt(FVector hitLocation, float lauchSpeed)
 		FString DebugMsg1 = FString::Printf(TEXT("No Solution Found!"));
 		GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Green, DebugMsg1);
 	}
+}
+
+void UTankAimingComponent::Fire()
+{
+	/*if (!ensure(TankAimingComponent))
+		return;
+
+	bool isReloaded = (FPlatformTime::Seconds() - lastFireTime > reloadedTimeInSeconds);
+
+	if (isReloaded)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Firing!"));
+		FVector spawnLocation = TankAimingComponent->Barrel->GetSocketLocation(FName("ProjectileStartSocket"));
+		FRotator spawnRotation = TankAimingComponent->Barrel->GetSocketRotation(FName("ProjectileStartSocket"));
+		AProjectile * projectile = GetWorld()->SpawnActor<AProjectile>(projectile_BP, spawnLocation, spawnRotation);
+		projectile->LaunchProjectile(launchSpeed);
+		lastFireTime = FPlatformTime::Seconds();
+	}*/
 }
 
 void UTankAimingComponent::MoveTowards(FVector aimDirection)
