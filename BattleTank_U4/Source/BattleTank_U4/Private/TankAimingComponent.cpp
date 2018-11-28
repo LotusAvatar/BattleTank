@@ -12,10 +12,55 @@ UTankAimingComponent::UTankAimingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	// ...
 }
+
+void UTankAimingComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	GetProjectileBP_reference();
+}
+
+void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+{
+	lastFireTime += DeltaTime;
+
+	FString DebugMsg1 = FString::Printf(TEXT("lastFireTime: %f"), lastFireTime);
+	GEngine->AddOnScreenDebugMessage(2, 0.0f, FColor::Green, DebugMsg1);
+
+	if (lastFireTime < reloadedTimeInSeconds)
+		firingState = EFiringState::Reloading;
+	else if (IsBarrelMoving())
+		firingState = EFiringState::Aiming;
+	else
+		firingState = EFiringState::Locked;
+}
+
+void UTankAimingComponent::GetProjectileBP_reference()
+{
+	//Gets the reference of projectile_BP directly from the content folder
+	FString projectile_BP_ref = TEXT("Blueprint'/Game/tank/Projectile_BP.Projectile_BP'");
+	UObject * loadedObject = StaticLoadObject(UObject::StaticClass(), nullptr, *projectile_BP_ref);
+	UBlueprint* castedBlueprint = Cast<UBlueprint>(loadedObject);
+
+	if (!ensure(castedBlueprint))
+		return;
+
+	if (ensure(castedBlueprint->GeneratedClass->IsChildOf(AProjectile::StaticClass())))
+		projectile_BP = *castedBlueprint->GeneratedClass;
+}
+
+bool UTankAimingComponent::IsBarrelMoving()
+{
+	if (!ensure(Barrel))
+		return false;
+	
+	FVector barrelForward = Barrel->GetForwardVector();
+	return !barrelForward.Equals(aimDirection, 0.01f);
+}
+
 
 void UTankAimingComponent::Initialise(UTankBarrel * barrelToSet, UTankTurret * turretToSet)
 {
@@ -35,36 +80,37 @@ void UTankAimingComponent::AimAt(FVector hitLocation)
 	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity(this, outLaunchVelocity, startLocation, hitLocation, launchSpeed, false, 0, 0, ESuggestProjVelocityTraceOption::DoNotTrace);
 	if (bHaveAimSolution)
 	{
-		FVector aimDirection = outLaunchVelocity.GetSafeNormal();
-		MoveTowards(aimDirection);
+		MoveTowards(outLaunchVelocity);
 	}
 	else
 	{
-		FString DebugMsg1 = FString::Printf(TEXT("No Solution Found!"));
-		GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Green, DebugMsg1);
+	/*	FString DebugMsg1 = FString::Printf(TEXT("No Solution Found!"));
+		GEngine->AddOnScreenDebugMessage(1, 0.0f, FColor::Green, DebugMsg1);*/
 	}
 }
 
 void UTankAimingComponent::Fire()
 {
-	/*if (!ensure(TankAimingComponent))
-		return;
-
-	bool isReloaded = (FPlatformTime::Seconds() - lastFireTime > reloadedTimeInSeconds);
-
-	if (isReloaded)
+	if (!(firingState == EFiringState::Reloading))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Firing!"));
-		FVector spawnLocation = TankAimingComponent->Barrel->GetSocketLocation(FName("ProjectileStartSocket"));
-		FRotator spawnRotation = TankAimingComponent->Barrel->GetSocketRotation(FName("ProjectileStartSocket"));
+		if (!ensure(Barrel && projectile_BP))
+		{
+			return;
+		}
+
+		FVector spawnLocation = Barrel->GetSocketLocation(FName("ProjectileStartSocket"));
+		FRotator spawnRotation = Barrel->GetSocketRotation(FName("ProjectileStartSocket"));
 		AProjectile * projectile = GetWorld()->SpawnActor<AProjectile>(projectile_BP, spawnLocation, spawnRotation);
 		projectile->LaunchProjectile(launchSpeed);
-		lastFireTime = FPlatformTime::Seconds();
-	}*/
+		lastFireTime = 0.0f;
+		firingState = EFiringState::Reloading;
+	}
 }
 
-void UTankAimingComponent::MoveTowards(FVector aimDirection)
+void UTankAimingComponent::MoveTowards(FVector launchVelocity)
 {
+	aimDirection = launchVelocity.GetSafeNormal();
+
 	if (!ensure(Barrel || Turret))
 		return;
 

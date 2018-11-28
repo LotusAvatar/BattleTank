@@ -7,17 +7,10 @@
 #include "Tank.generated.h"
 
 // Forward Declarations
-class UTankBarrel;
-class UTankTurret;
-
 UCLASS()
 class BATTLETANK_U4_API ATank : public APawn
 {
 	GENERATED_BODY()
-
-public:
-	UFUNCTION(BlueprintCallable)
-	void Fire();
 
 private:
 	// Sets default values for this pawn's properties
@@ -28,9 +21,4 @@ private:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UPROPERTY(EditDefaultsOnly, Category = Firing)
-	float launchSpeed = 5000.0f;
-
-	
 };

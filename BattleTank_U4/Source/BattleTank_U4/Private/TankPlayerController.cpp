@@ -80,9 +80,6 @@ bool ATankPlayerController::GetLookVectorHitLocation(FVector lookDirection, FVec
 	FVector startLocation = PlayerCameraManager->GetCameraLocation();
 	FVector endLocation = startLocation + (lookDirection * lineTraceRange);
 
-	FString DebugMsg1 = FString::Printf(TEXT("endLocation: %s"), *endLocation.ToString());
-	GEngine->AddOnScreenDebugMessage(2, 0.0f, FColor::Green, DebugMsg1);
-
 	if (GetWorld()->LineTraceSingleByChannel(hitResult, startLocation, endLocation, ECollisionChannel::ECC_Visibility))
 	{
 		outHitLocation = hitResult.Location;
