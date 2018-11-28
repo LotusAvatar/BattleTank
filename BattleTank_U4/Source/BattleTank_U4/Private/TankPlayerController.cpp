@@ -2,6 +2,7 @@
 
 #include "TankPlayerController.h"
 #include "Tank.h"
+#include "TankAimingComponent.h"
 #include "CustomHeaders.h"
 
 
@@ -15,7 +16,6 @@ void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	Initialize();
-	
 }
 
 void ATankPlayerController::Tick(float DeltaTime)
@@ -27,12 +27,17 @@ void ATankPlayerController::Tick(float DeltaTime)
 void ATankPlayerController::Initialize()
 {
 	auto ControlledTank = GetControlledTank();
-	if (!ControlledTank)
+	if (!ensure(ControlledTank))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayerController not possessing a tank"));
+		return;
+		//UE_LOG(LogTemp, Warning, TEXT("PlayerController not possessing a tank"));
 	}
 	else
 	{
+		UTankAimingComponent * aimingComponent = ControlledTank->FindComponentByClass< UTankAimingComponent>();
+		if (aimingComponent)
+			FoundAimingComponent(aimingComponent);
+		
 		UE_LOG(LogTemp, Warning, TEXT("PlayerController possessing: %s"), *(ControlledTank->GetName()));
 	}
 	crossHairXLocation = 0.5f;
@@ -41,7 +46,7 @@ void ATankPlayerController::Initialize()
 
 void ATankPlayerController::AimTowardsCrosshair()
 {
-	if (!GetControlledTank())
+	if (!ensure(GetControlledTank()))
 		return;
 
 	FVector outHitLocation;

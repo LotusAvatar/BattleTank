@@ -5,7 +5,6 @@
 #include "TankTurret.h"
 #include "Projectile.h"
 #include "TankAimingComponent.h"
-#include "TankMovementComponent.h"
 #include "CustomHeaders.h"
 
 
@@ -15,26 +14,26 @@ ATank::ATank()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
-	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("AimingComponent"));
 }
 
-void ATank::SetReferences(UTankBarrel * barrelToSet, UTankTurret * turretToSet)
+void ATank::BeginPlay()
 {
-	Barrel = barrelToSet;
-	Barrel->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	TankAimingComponent->SetBarrelReference(barrelToSet);
-	TankAimingComponent->SetTurretReference(turretToSet);
+	Super::BeginPlay();
+	TankAimingComponent = FindComponentByClass<UTankAimingComponent>();
 }
 
 void ATank::Fire()
 {
+	if (!ensure(TankAimingComponent)) 
+		return;
+
 	bool isReloaded = (FPlatformTime::Seconds() - lastFireTime > reloadedTimeInSeconds);
-	if (Barrel && isReloaded)
+
+	if (isReloaded)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Firing!"));
-		FVector spawnLocation = Barrel->GetSocketLocation(FName("ProjectileStartSocket"));
-		FRotator spawnRotation = Barrel->GetSocketRotation(FName("ProjectileStartSocket"));
+		FVector spawnLocation = TankAimingComponent->Barrel->GetSocketLocation(FName("ProjectileStartSocket"));
+		FRotator spawnRotation = TankAimingComponent->Barrel->GetSocketRotation(FName("ProjectileStartSocket"));
 		AProjectile * projectile = GetWorld()->SpawnActor<AProjectile>(projectile_BP, spawnLocation, spawnRotation);
 		projectile->LaunchProjectile(launchSpeed);
 		lastFireTime = FPlatformTime::Seconds();
@@ -43,19 +42,17 @@ void ATank::Fire()
 
 void ATank::AimAt(FVector hitLocation)
 {
+	if (!ensure(TankAimingComponent))
+		return;
+	
 	TankAimingComponent->AimAt(hitLocation, launchSpeed);
 }
 
 // Called when the game starts or when spawned
-void ATank::BeginPlay()
-{
-	Super::BeginPlay();
-}
 
 // Called to bind functionality to input
 void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
