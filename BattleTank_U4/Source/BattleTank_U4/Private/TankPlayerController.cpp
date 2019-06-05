@@ -19,19 +19,19 @@ void ATankPlayerController::Tick(float DeltaTime)
 
 void ATankPlayerController::Initialize()
 {
-	auto ControlledTank = GetPawn();
-	if (!ensure(ControlledTank))
+	auto controlledTank = GetPawn();
+	if (!ensure(controlledTank))
 	{
 		return;
 		//UE_LOG(LogTemp, Warning, TEXT("PlayerController not possessing a tank"));
 	}
 	else
 	{
-		UTankAimingComponent * aimingComponent = ControlledTank->FindComponentByClass< UTankAimingComponent>();
+		UTankAimingComponent * aimingComponent = controlledTank->FindComponentByClass< UTankAimingComponent>();
 		if (ensure(aimingComponent))
 			FoundAimingComponent(aimingComponent);
 		
-		UE_LOG(LogTemp, Warning, TEXT("PlayerController possessing: %s"), *(ControlledTank->GetName()));
+		UE_LOG(LogTemp, Warning, TEXT("PlayerController possessing: %s"), *(controlledTank->GetName()));
 	}
 	crossHairXLocation = 0.5f;
 	crossHairYLocation = 0.33333f;
@@ -39,7 +39,11 @@ void ATankPlayerController::Initialize()
 
 void ATankPlayerController::AimTowardsCrosshair()
 {
-	UTankAimingComponent * aimingComponent = GetPawn()->FindComponentByClass< UTankAimingComponent>();
+	auto controlledTank = GetPawn();
+	if (!ensure(controlledTank))
+		return;
+
+	UTankAimingComponent * aimingComponent = controlledTank->FindComponentByClass< UTankAimingComponent>();
 	if (!ensure(aimingComponent))
 		return;
 

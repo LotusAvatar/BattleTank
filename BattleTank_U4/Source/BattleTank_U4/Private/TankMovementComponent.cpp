@@ -4,7 +4,6 @@
 #include "CustomHeaders.h"
 #include "TankTrack.h"
 
-
 void UTankMovementComponent::IntendMoveForward(float amount)
 {
 	if (!ensure(leftTrack) || !ensure(rightTrack))
